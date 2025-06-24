@@ -61,8 +61,19 @@ class BarangDetailSheet extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    controller.deleteBarang(barang.id!);
-                    Navigator.pop(context);
+                    Get.defaultDialog(
+                      title: 'Konfirmasi',
+                      middleText:
+                          'Apakah Anda yakin ingin menghapus barang ini?',
+                      textCancel: 'Batal',
+                      textConfirm: 'Hapus',
+                      confirmTextColor: Colors.white,
+                      onConfirm: () {
+                        controller.deleteBarang(barang.id!);
+                        Get.back();
+                        Navigator.pop(context);
+                      },
+                    );
                   },
                 ),
               ),

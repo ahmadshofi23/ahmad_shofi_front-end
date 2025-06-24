@@ -20,7 +20,7 @@ class _BarangFormPageState extends State<BarangFormPage> {
   final _namaController = TextEditingController();
   final _stokController = TextEditingController();
   final _hargaController = TextEditingController();
-  String _kelompok = 'Utama';
+  String _kelompok = 'Smartphone';
   int? _kategoriId;
   List<Map<String, dynamic>> _kategoriList = [];
   final controller = Get.find<BarangController>();
@@ -56,10 +56,25 @@ class _BarangFormPageState extends State<BarangFormPage> {
       );
       if (widget.isEdit) {
         controller.updateBarang(barang);
+        Get.back();
+        Future.delayed(Duration(milliseconds: 300), () {
+          Get.snackbar(
+            'Berhasil',
+            'Barang berhasil diperbarui',
+            snackPosition: SnackPosition.TOP,
+          );
+        });
       } else {
         controller.addBarang(barang);
+        Get.back();
+        Future.delayed(Duration(milliseconds: 300), () {
+          Get.snackbar(
+            'Berhasil',
+            'Barang berhasil ditambahkan',
+            snackPosition: SnackPosition.TOP,
+          );
+        });
       }
-      Get.back();
     }
   }
 
@@ -80,12 +95,11 @@ class _BarangFormPageState extends State<BarangFormPage> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
+              CustomeTextFormField(
                 controller: _namaController,
-                decoration: InputDecoration(labelText: 'Nama Barang*'),
-                onChanged: (_) => updateValidity(),
-                validator:
-                    (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
+                title: 'Nama Barang',
+                updateValidity: updateValidity,
+                keyboardType: TextInputType.text,
               ),
               SizedBox(height: 12),
               DropdownButtonFormField<int>(
@@ -111,7 +125,7 @@ class _BarangFormPageState extends State<BarangFormPage> {
                 value: _kelompok,
                 decoration: InputDecoration(labelText: 'Kelompok Barang*'),
                 items:
-                    ['Utama', 'Tambahan', 'Sampingan']
+                    ['Smartphone', 'Laptop', 'Baju', 'Celana', 'Sepatu']
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
                 onChanged: (val) {
@@ -123,22 +137,18 @@ class _BarangFormPageState extends State<BarangFormPage> {
               ),
 
               SizedBox(height: 12),
-              TextFormField(
+              CustomeTextFormField(
                 controller: _stokController,
+                title: 'Stok',
+                updateValidity: updateValidity,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Stok*'),
-                validator:
-                    (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
-                onChanged: (_) => updateValidity(),
               ),
               SizedBox(height: 12),
-              TextFormField(
+              CustomeTextFormField(
                 controller: _hargaController,
+                title: 'Harga (Rp)',
+                updateValidity: updateValidity,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Harga (Rp)*'),
-                validator:
-                    (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
-                onChanged: (value) => updateValidity(),
               ),
               SizedBox(height: 20),
               Obx(
@@ -161,6 +171,35 @@ class _BarangFormPageState extends State<BarangFormPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CustomeTextFormField extends StatelessWidget {
+  const CustomeTextFormField({
+    super.key,
+    required this.controller,
+    required this.title,
+    required this.updateValidity,
+    required this.keyboardType,
+  });
+
+  final TextEditingController controller;
+  final String title;
+  final Function? updateValidity;
+  final TextInputType keyboardType;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: '$title*',
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+      ),
+      onChanged: updateValidity != null ? (value) => updateValidity!() : null,
+      validator: (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
     );
   }
 }

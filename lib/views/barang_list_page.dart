@@ -24,7 +24,20 @@ class BarangListPage extends StatelessWidget {
                 controller.selectedIds.isNotEmpty
                     ? IconButton(
                       icon: Icon(Icons.delete),
-                      onPressed: controller.deleteSelectedBarang,
+                      onPressed: () {
+                        Get.defaultDialog(
+                          title: 'Konfirmasi',
+                          middleText:
+                              'Apakah Anda yakin ingin menghapus barang ini?',
+                          textCancel: 'Batal',
+                          textConfirm: 'Hapus',
+                          confirmTextColor: Colors.white,
+                          onConfirm: () {
+                            controller.deleteSelectedBarang();
+                            Get.back();
+                          },
+                        );
+                      },
                     )
                     : SizedBox.shrink(),
           ),
